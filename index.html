@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Webová aplikace pro pomoc s rozhodováním při volbách">
+        <meta name="keywords" content="volby, volební kalkulačka, volební kompas">
+        <meta name="author" content="Josef Plch">
+        <title>Volební kalkulačka</title>
+        <link rel="icon" href="./favicon.png">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="./html2canvas.min.js"></script>
+        <style>
+            body
+            {
+                background-color: #f2f3f0;
+                height: 100vh;
+                min-width: 20rem;
+                overflow-y: scroll;
+            }
+            
+            body, .btn
+            {
+                font-size: 1.2rem;
+            }
+            
+            footer
+            {
+                font-size: 1.05rem;
+            }
+            
+            h1, h2, h3, h4, h5, h6
+            {
+                font-weight: 600;
+            }
+            
+            table, tr, td, th
+            {
+                border-color: #bbc4ca;
+                vertical-align: middle;
+            }
+            
+            td
+            {
+                text-align: left;
+            }
+            
+            td, th
+            {
+                overflow-wrap: anywhere;
+            }
+            
+            th
+            {
+                background-color: #ececec;
+            }
+            
+            .accented
+            {
+                font-weight: bolder;
+            }
+            
+            .bg-danger
+            {
+                background-color: #fceae6 !important;
+            }
+            
+            .bg-success
+            {
+                background-color: #c6e697 !important;
+            }
+            
+            .bg-warning
+            {
+                background-color: #fff0b3 !important;
+            }
+            
+            .btn.btn-lg, .btn-group-lg.btn
+            {
+                font-size: 1.2rem;
+            }
+            
+            .btn-text
+            {
+                display: inline-grid;
+            }
+            
+            .btn-text-active,
+            .btn-text-inactive
+            {
+                grid-column-start: 1;
+                grid-row-start: 1;
+            }
+            
+            .index {
+                flex-grow: 0;
+                flex-shrink: 0;
+                padding-right: 0.3rem;
+                text-align: right;
+                width: 2.5rem;
+            }
+            
+            .question .details
+            {
+                color: #444;
+                font-size: 1.1rem;
+                font-style: italic;
+            }
+            
+            .question .option
+            {
+                cursor: pointer;
+                display: flex;
+                margin-bottom: 0;
+                padding: 0.25rem 0.65rem 0 0.65rem;
+            }
+            
+            .question .option .form-check-input
+            {
+                cursor: pointer;
+                margin-left: 0;
+                margin-right: 0.35rem;
+            }
+            
+            .question .option label
+            {
+                cursor: pointer;
+                flex-grow: 1;
+            }
+            
+            .question .option.regular
+            {
+                background-color: #f2f3f0;
+                padding: 0.5rem 0.65rem;
+                transition:
+                    background-color 0.15s ease-in-out,
+                    border-color     0.15s ease-in-out,
+                    box-shadow       0.15s ease-in-out,
+                    color            0.15s ease-in-out;
+            }
+            
+            .question .option.regular.focus,
+            .question .option.regular:hover
+            {
+                background-color: #e5e7e4;
+            }
+            
+            .question .option.regular .form-check-input:checked
+            {
+                background-color: #053680;
+                border-color: #062553;
+            }
+            
+            .question .option.regular.focus
+            {
+                box-shadow: 0 0 0 0.25rem rgb(49 132 253 / 50%);
+            }
+            
+            .question .option.regular .form-check-input:focus
+            {
+                /* border-color: rgba(0 0 0 / 25%) !important; */
+                box-shadow: none !important;
+            }
+            
+            .question .option.regular.selected
+            {
+                background-color: #0d6efd;
+                color: white;
+            }
+            
+            .question .option.regular.selected.focus,
+            .question .option.regular.selected:hover
+            {
+                background-color: #0b5ed7;
+            }
+            
+            .question .option.regular.selected .form-check-input:focus
+            {
+                /* box-shadow: 0 0 0 0.25rem rgb(152 193 254 / 100%); */
+                box-shadow: 0 0 0 0.25rem rgb(255 255 255 / 35%);
+            }
+            
+            .question .text
+            {
+                font-weight: 600;
+            }
+            
+            .response-cell
+            {
+                min-width: 8rem;
+                max-width: 12rem;
+            }
+            
+            .shadow {
+                box-shadow: 0 0.1rem 0.5rem rgb(0 0 0 / 5%) !important;
+            }
+            
+            /* Collapsed border of the sticky column would be invisible when sliding. */
+            .table-responsive.table-sticky table
+            {
+                border-collapse: separate;
+                border-spacing: initial;
+                border-top: 1px solid #bbc4ca;
+            }
+            
+            .table-responsive.table-sticky td,
+            .table-responsive.table-sticky th
+            {
+                border-top-width:    0;
+                border-right-width:  1px;
+                border-left-width:   0;
+            }
+            
+            .table-responsive.table-sticky td
+            {
+                border-bottom-width: 1px;
+            }
+            
+            .table-responsive.table-sticky th
+            {
+                border-bottom: 2px solid black;
+            }
+            
+            /* The sticky column */
+            .table-responsive.table-sticky th:first-child,
+            .table-responsive.table-sticky td:first-child
+            {
+                background-color: white;
+                border-top-width: 0;
+                border-right-width: 1px;
+                border-left-width: 1px;
+                position: sticky;
+                left: 0;
+                min-width: 12rem;
+            }
+            
+            #evaluation-box .evaluation-list
+            {
+                font-size: 1.25rem;
+            }
+            
+            #screenshot
+            {
+                background: white;
+                /* Out of screen */
+                left: -600px;
+                padding: 30px 40px 35px 40px;
+                position: absolute;
+                top: 0;
+                width: 500px;
+            }
+            
+            #screenshot .evaluation
+            {
+                display: grid;
+                font-size: 28px;
+                gap: 20px;
+                margin-top: 20px;
+            }
+            
+            #screenshot .no-answer
+            {
+                margin-top: 10px;
+                font-size: 22px;
+            }
+            
+            #screenshot .progress
+            {
+                border-radius: 5px;
+                height: 25px;
+            }
+            
+            #screenshot .title
+            {
+                font-size: 32px;
+                line-height: 130%;
+            }
+            
+            #screenshot .title .dataset-name
+            {
+                font-weight: 600;
+            }
+            
+            #screenshot .web
+            {
+                font-size: 18px;
+                line-height: 120%;
+                margin-top: 35px;
+                text-align: left;
+            }
+            
+            #screenshot .web .qr-code[data-hostname="volby.jednoduse.cz"]
+            {
+                background-size: 70px 70px;
+                background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0AQMAAADxGE3JAAAABlBMVEUAAAD///+l2Z/dAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABUElEQVR4Xu3cwa2DMBAEUHeQ/rukA/4XOYzkcQpY9OZgxXjf5raKAGVVPvc3z6fnyratTPQ8z/MBUVn+c621NUnGe57n+UzCqkiTNE7xazzP83xXZH6+2fM8z2dg3t9coe/zPM/zSa4/NIlPxnqe5/mky3opMNnzPM/flXpqksZdN9bzPM8n24TMYba1DPc8z/OpPd0wzDan4z3P8/zh1mH8N9U437hmep7n+STDMentdm2y53mez2E9JunuT1Iy2fM8z0c9SdnWM022ZbLneZ7vCXl+nbC6r8me53n+PDVP87O6j/c8z/N3VWRg5qAn7ljP8zx/V1J7fn86B5M9z/N85VMVma5Zis3zPM/z/f8Joak9v054zfY8z/OpqG0ndS/1PM/zq96f7p7v8jzP8+dnKtVpvOd5nk/iMz9/DNbRnud5vpOy84/IykjP8zz/B375tTQCiNstAAAAAElFTkSuQmCC);
+                background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAH0AQMAAADxGE3JAAAABlBMVEV3d3f///8O5AZeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABUElEQVR4Xu3cwa2DMBAEUHeQ/rukA/4XOYzkcQpY9OZgxXjf5raKAGVVPvc3z6fnyratTPQ8z/MBUVn+c621NUnGe57n+UzCqkiTNE7xazzP83xXZH6+2fM8z2dg3t9coe/zPM/zSa4/NIlPxnqe5/mky3opMNnzPM/flXpqksZdN9bzPM8n24TMYba1DPc8z/OpPd0wzDan4z3P8/zh1mH8N9U437hmep7n+STDMentdm2y53mez2E9JunuT1Iy2fM8z0c9SdnWM022ZbLneZ7vCXl+nbC6r8me53n+PDVP87O6j/c8z/N3VWRg5qAn7ljP8zx/V1J7fn86B5M9z/N85VMVma5Zis3zPM/z/f8Joak9v054zfY8z/OpqG0ndS/1PM/zq96f7p7v8jzP8+dnKtVpvOd5nk/iMz9/DNbRnud5vpOy84/IykjP8zz/B375tTQCiNstAAAAAElFTkSuQmCC);
+                color: #aaa;
+                flex-shrink: 0;
+                height: 70px;
+                width:  70px;
+                margin-right: 20px;
+            }
+        </style>
+    </head>
+    <body class="d-flex flex-column text-center">
+        <header class="px-3 px-sm-4 pt-3 pt-sm-4">
+            <h1 class="mb-1 fs-2">
+                <span class="text-nowrap">Volební kalkulačka:</span>
+                <span class="text-nowrap dataset-name"><!-- Dynamic content --></span>
+            </h1>
+            <div class="text-secondary">
+                <span class="text-nowrap">Odpovězte na otázky a zjistěte,</span>
+                <span class="text-nowrap">kdo má nejpodobnější názory.</span>
+            </div>
+        </header>
+        
+        <main id="main-carousel" class="carousel slide" data-bs-interval="false">
+            <div class="carousel-inner pt-3 px-3 px-sm-4 pb-3 pb-sm-4">
+                <!-- Question panel -->
+                <div id="question-tab" class="carousel-item active">
+                    <div class="mx-auto" style="max-width: 50rem">
+                        <div id="questions" class="d-grid gap-3">
+                            <!-- Dynamic content -->
+                            <div class="alert alert-info p-5">Načítám otázky …</div>
+                        </div>
+                        <button type="button" id="evaluate-button" class="btn btn-primary btn-lg mt-3 w-100" disabled>
+                            Vyhodnotit <i class="fa-solid fa-chevron-right"></i> 
+                        </button>
+                        <label id="evaluate-note" for="evaluate-button" class="mt-2 text-secondary">
+                            <span class="text-nowrap">Pro vyhodnocení odpovězte</span>
+                            <span class="text-nowrap">alespoň na jednu otázku.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Evaluation panel -->
+                <div id="evaluation-tab" class="carousel-item">
+                    <div class="mx-auto d-grid gap-3" style="max-width: 40rem">
+                        <div class="p-3 p-sm-4 bg-white rounded shadow">
+                            <h2 class="fs-3">Výsledky</h2>
+                            <div id="evaluation-box">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                        <button type="button" id="download-button" class="btn btn-primary btn-lg w-100">
+                            <i class="fa-solid fa-download"></i>
+                            <span class="d-inline d-sm-none">Stáhnout výsledky</span>
+                            <span class="d-none d-sm-inline">Stáhnout výsledky jako obrázek</span>
+                        </button>
+                        <button type="button" id="back-button" class="btn btn-primary btn-lg w-100">
+                            <i class="fa-solid fa-chevron-left"></i> Upravit mé odpovědi
+                        </button>
+                    </div>
+                    <div id="comparison" class="mt-4 mx-auto" style="max-width: 100rem">
+                        <h2 class="fs-4">Porovnání odpovědí</h2>
+                        <div class="table-responsive table-sticky">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div id="reason-modal" class="modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-light">
+                        <h3 class="modal-title">Vyjádření k nevyplnění</h3>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Dynamic content -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">
+                            Zavřít
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- The footer copy is a placeholder which ensures the fixed footer doesn’t overlap the content. -->
+        <footer id="footer-copy" class="px-3 py-2 text-center opacity-0">
+            <!-- Dynamic content -->
+        </footer>
+        
+        <!-- This is the actual, visible footer. -->
+        <footer id="footer" class="px-3 py-2 text-center bg-dark text-secondary fixed-bottom">
+            <span>
+                Šablona:
+                <span class="text-nowrap">verze 2022-09-12,</span>
+                <span class="text-nowrap">licence <a href="https://cs.wikipedia.org/wiki/Licence_MIT" title="Článek o licenci na Wikipedii" class="text-secondary">MIT</a>,</span>
+                <span class="text-nowrap">vytvořil Josef Plch ml.</span>
+            </span>
+            <span class="author"><!-- Dynamic content --></span>
+        </footer>
+        
+        <!-- Area for constructing of screenshots. -->
+        <div id="screenshot">
+            <div class="title">
+                <div>
+                    Moje výsledky:
+                </div>
+                <div class="dataset-name">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+            <div class="evaluation">
+                <!-- Dynamic content -->
+            </div>
+            <div class="web d-flex align-items-center">
+                <div class="qr-code">
+                    <!-- Content via CSS -->
+                </div>
+                <div class="text-break">
+                    Vytvořeno pomocí volební kalkulačky
+                    <div class="url">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        'use strict';
+        
+        const ACCENTED_FACTOR = 3;
+        const COLOURS = {
+            success: {r: 200, g: 240, b: 165},
+            warning: {r: 250, g: 235, b: 150},
+            danger:  {r: 255, g: 230, b: 225},
+            none:    {r: 242, g: 243, b: 240}
+        };
+        // DATASET is loaded from an external file.
+        const FANCY_TOOLTIPS = true;
+        const LOCALIZATION = {
+            comment:          'Komentář',
+            compare:          'Porovnat',
+            dataFileNotFound: 'Datový soubor požadované kalkulačky nebyl nalezen.',
+            doNotCompare:     'Neporovnávat',
+            downloadError:    'Stažení obrázku se nezdařilo, použijte snímek obrazovky (klávesa Prt Sc).',
+            importantButton:  'Označit jako důležité',
+            importantTitle:   'Otázka označená jako důležitá má ' + ACCENTED_FACTOR + '× vyšší váhu.',
+            invalidDataFile:  'Datový soubor požadované kalkulačky je neplatný.',
+            match:            'shoda',
+            myResponse:       'Moje odpověď',
+            noComment:        'bez komentáře',
+            noResponse:       'přeskočit otázku', // Variants: nechci odpovídat | bez odpovědi | přeskočit | ignorovat
+            question:         'Otázka',
+            votingAdviceApp:  'Volební kalkulačka'
+        };
+        const NO_ANSWER_PENALTY = 0.000001;
+        const NO_RESPONSE = '<span class="text-secondary">—</span>';
+        const REASON_MODAL = new bootstrap.Modal (document.getElementById ('reason-modal'));
+        const REQUIRE_HTTPS = true;
+        var serialNumber = 1;
+        var datasetFileName;
+        
+        // Compare to printResultList.
+        function downloadResults ()
+        {
+            $('#screenshot .evaluation').html (
+                DATASET.respondents
+                .filter (respondent => respondent.responded)
+                .map ((respondent, i) =>
+                    '<div>'
+                        + '<div class="d-flex justify-content-between">'
+                            + '<span>' + respondent.name + '</span>'
+                            + '<span>' + showPercent (respondent.score) + '</span>'
+                        + '</div>'
+                        + showProgress (respondent)
+                    + '</div>'
+                )
+                .join ('')
+                + (
+                    DATASET.respondents.every (respondent => respondent.responded)
+                    ? ''
+                    : (
+                        '<div class="no-answer">'
+                            + 'Na žádnou otázku neodpověděli:'
+                            + '<div>'
+                                + DATASET.respondents
+                                .filter (respondent => respondent.responded === false)
+                                .map (respondent => '<span class="text-nowrap">' + respondent.name + '</span>')
+                                .join (', ')
+                            + '</div>'
+                        + '</div>'
+                    )
+                )
+            );
+            
+            try
+            {
+                // See http://html2canvas.hertzen.com/
+                // For use of nested images, see:
+                // https://stackoverflow.com/questions/22710627/tainted-canvases-may-not-be-exported
+                html2canvas (
+                    document.getElementById ('screenshot'),
+                    {
+                        /*
+                        allowTaint: true,
+                        foreignObjectRendering: true
+                        */
+                    }
+                )
+                .then (canvas => {
+                    const link = document.createElement ('a');
+                    link.href = canvas.toDataURL ('image/png');
+                    link.download = 'Kalkulacka.png';
+                    document.body.appendChild (link);
+                    link.click ();
+                    document.body.removeChild (link);                
+                });
+            }
+            catch (exception)
+            {
+                console.error (exception);
+                alert (LOCALIZATION.downloadError);
+            }
+        }
+        
+        function init ()
+        {
+            if (typeof DATASET === 'undefined')
+            {
+                printError (LOCALIZATION.invalidDataFile);
+                throw 'Invalid data file';
+            }
+            
+            // Update the title and author.
+            document.title = DATASET.name + ' | ' + LOCALIZATION.votingAdviceApp;
+            $('.dataset-name').html (DATASET.name);
+            
+            $('meta[name="author"]').attr ('content', DATASET.author);
+            $('footer .author').html (
+                '<span class="mx-1">|</span>'
+                + ' <span class="text-nowrap">Data: ' + DATASET.author + '</span>'
+            );
+            
+            // Set the missing attributes.
+            for (const respondent of DATASET.respondents)
+            {
+                if ('colour' in respondent === false || respondent.colour === null)
+                {
+                    respondent.colour = '#3d3d3d';
+                }
+                
+                if ('nonFilingStatement' in respondent === false || respondent.nonFilingStatement === null)
+                {
+                    respondent.nonFilingStatement = [];
+                }
+            }
+            
+            // Set the missing attributes.
+            for (const question of DATASET.questions)
+            {
+                question.userResponse = null;
+                question.accented = false;
+                
+                for (const respondent of DATASET.respondents)
+                {
+                    if (respondent.name in question.responses === false)
+                    {
+                        question.responses[respondent.name] = {option: null, comment: null};
+                    }
+                    else
+                    {
+                        const response = question.responses[respondent.name];
+                        
+                        if ('option' in response === false || response.option.length === 0)
+                        {
+                            response.option = null;
+                        }
+                        
+                        if ('comment' in response === false || response.comment.length === 0)
+                        {
+                            response.comment = null;
+                        }
+                    }
+                }
+            }
+            
+            $('#questions').html (
+                DATASET.questions.map ((question, qi) =>
+                    '<div class="question p-4 text-start bg-white rounded shadow">'
+                        + '<div class="d-block d-sm-flex justify-content-between align-items-center flex-wrap">'
+                            + '<h3 class="fs-4 mb-0 me-3">' + (qi + 1) + '. ' + question.title + '</h3>'
+                            + '<button'
+                                + ' type="button"'
+                                + ' class="accent-button btn btn-outline-primary mt-2 mt-sm-0"'
+                                + ' title="' + LOCALIZATION.importantTitle + '"'
+                            + '>'
+                                + '<i class="fa-solid fa-star"></i>'
+                                + ' <span class="btn-text">' + LOCALIZATION.importantButton + '</span>'
+                            + '</button>'
+                        + '</div>'
+                        + (
+                            'details' in question === false
+                            ? ''
+                            : (
+                                '<div class="mt-2 mb-3 details">'
+                                    + setLinkTargets (formatText (question.details))
+                                + '</div>'
+                            )
+                        )
+                        + '<div class="mt-2 text">'
+                            + formatText (question.text)
+                        + '</div>'
+                        + '<div class="options mt-2 d-grid gap-2">'
+                            + question.options.list.map ((option, oi) => {
+                                const inputId = 'radio-' + qi + '-' + oi;
+                                return (
+                                    '<label for="' + inputId + '" class="option regular rounded">'
+                                        + '<div>'
+                                            + '<input id="' + inputId + '" type="radio" name="question' + qi + '" value="' + option + '" class="form-check-input">'
+                                        + '</div>'
+                                        + option
+                                    + '</label>'
+                                );
+                            })
+                            .join ('\n')
+                            + '<label for="radio-' + qi + '-null" class="option text-muted rounded">'
+                                + '<div>'
+                                    + '<input id="radio-' + qi + '-null" type="radio" name="question' + qi + '" value="--" class="form-check-input">'
+                                + '</div>'
+                                + LOCALIZATION.noResponse
+                            + '</label>'
+                        + '</div>'
+                    + '</div>'
+                )
+            );
+            
+            console.log ('Dataset "' + DATASET.name + '" has been loaded.');
+            
+            $('#footer-copy').html ('#footer');
+            
+            if (FANCY_TOOLTIPS)
+            {
+                $('[title]').each (function () {
+                    new bootstrap.Tooltip (this);
+                });
+            }
+            
+            $('#screenshot .qr-code').attr ('data-hostname', window.location.hostname);
+            if (window.location.hostname === 'volby.jednoduse.cz')
+            {
+                $('#screenshot .url').html ('https://volby.jednoduse.cz/');
+            }
+            else
+            {
+                $('#screenshot .url').html (window.location.href);
+            }
+        }
+        
+        function evaluate ()
+        {
+            console.group ('Details for evaluation #' + serialNumber);
+            
+            // First, re-order the respondents by name. (Ordering is processed in place.)
+            DATASET.respondents.sort ((x, y) => x.name.localeCompare (y.name, 'cs'));
+            
+            for (const respondent of DATASET.respondents)
+            {
+                const matches =
+                    DATASET.questions.reduce (
+                        (result, question) => {
+                            if (respondent.name in question.responses === false)
+                            {
+                                throw (
+                                    'Missing response for respondent "' + respondent.name + '"'
+                                    + ' in question "' + question.title + '"'
+                                );
+                            }
+                            else
+                            {
+                                const optionList = question.options.list;
+                                let matchingDifference;
+                                // If the user did not respond, ignore the question.
+                                if (question.userResponse === null)
+                                {
+                                    matchingDifference = 0.0;
+                                    question.responses[respondent.name].colour = null;
+                                }
+                                // If the respondent did not respond, use average value.
+                                else if (question.responses[respondent.name].option === null)
+                                {
+                                    if (question.options.type === 'scale')
+                                    {
+                                        matchingDifference = 0.5 - NO_ANSWER_PENALTY;
+                                    }
+                                    else // independent
+                                    {
+                                        matchingDifference = 1.0 / optionList.length - NO_ANSWER_PENALTY;
+                                    }
+                                    question.responses[respondent.name].colour = COLOURS.none;
+                                }
+                                else
+                                {
+                                    if (question.options.type === 'scale')
+                                    {
+                                        const ri = optionList.indexOf (question.responses[respondent.name].option);
+                                        const ui = optionList.indexOf (question.userResponse);
+                                        matchingDifference = 1.0 - 1.0 * Math.abs (ri - ui) / (optionList.length - 1);
+                                    }
+                                    else // independent
+                                    {
+                                        matchingDifference =
+                                            question.responses[respondent.name].option === question.userResponse
+                                            ? 1.0
+                                            : 0.0;
+                                    }
+                                    
+                                    // Compute the response colour.
+                                    let colour1;
+                                    let colour2;
+                                    let ratio;
+                                    
+                                    if (matchingDifference < 0.5)
+                                    {
+                                        ratio = 2 * matchingDifference;
+                                        colour1 = COLOURS.danger;
+                                        colour2 = COLOURS.warning;
+                                    }
+                                    else
+                                    {
+                                        ratio = 2 * (matchingDifference - 0.5);
+                                        colour1 = COLOURS.warning;
+                                        colour2 = COLOURS.success;
+                                    }
+                                    
+                                    const colour = {
+                                        r: Math.round (colour1.r + ratio * (colour2.r - colour1.r)),
+                                        g: Math.round (colour1.g + ratio * (colour2.g - colour1.g)),
+                                        b: Math.round (colour1.b + ratio * (colour2.b - colour1.b))
+                                    };
+                                    // console.log (respondent.name, matchingDifference, '=>', colour);
+                                    question.responses[respondent.name].colour = colour;
+                                }
+                                
+                                const totalDifference = question.userResponse === null ? 0 : 1;
+                                const factor = question.accented ? ACCENTED_FACTOR : 1;
+                                return ({
+                                    matching: result.matching + factor * matchingDifference,
+                                    total:    result.total    + factor * totalDifference
+                                });
+                            }
+                        },
+                        {matching: 0, total: 0}
+                    );
+                
+                // Cancel the old selection.
+                respondent.selected = false;
+                respondent.responded = DATASET.questions.some (q => q.responses[respondent.name].option);
+                respondent.score = 1.0 * matches.matching / matches.total;
+                
+                console.log (respondent.name + ':', respondent.score);
+            }
+            console.groupEnd ();
+            
+            // Order the respondents by score. (Ordering is processed in place.)
+            DATASET.respondents.sort ((x, y) => y.score - x.score);
+            
+            printResultList ();
+            $('#compare-button').prop ('disabled', true);
+            $('#comparison').hide ();
+            $('#main-carousel').carousel ('next');
+        }
+        
+        function formatText (text)
+        {
+            // Non-breakable spaces.
+            const nbsp = '&nbsp;';
+            const nonBreakingWords =
+                [
+                    // One-character words
+                    'a', 'i', 'k', 'o', 's', 'u', 'v', 'z',
+                    // Two-character words
+                    'do', 'ke', 'ku','na', 'od', 'po', 'se', 've', 'za', 'ze', 'že',
+                    // Longer words
+                    'bez', 'beze', 'dle', 'mezi', 'nad', 'nade', 'ode', 'pod', 'pode',
+                    'pro', 'před', 'přede', 'přes', 'přese', 'skrz', 'skrze',
+                ]
+                // Add upper-case variants.
+                .flatMap (word => [word, ucFirst (word), word.toUpperCase ()]);
+            
+            let result = ' ' + text;
+            for (const word of nonBreakingWords)
+            {
+                result = result.replaceAll (' '  + word + ' ', ' '  + word + nbsp);
+                result = result.replaceAll ('('  + word + ' ', '('  + word + nbsp);
+                result = result.replaceAll (nbsp + word + ' ', nbsp + word + nbsp);
+            }
+            result = result.substring (1);
+            
+            // Long words. Beware of links.
+            result = result.replace (/([a-z]{2}[aáeěéiíoóuúůyý])/, '$1<wbr>');
+            
+            return result;
+        }
+        
+        function log ()
+        {
+            const accented =
+                DATASET.questions
+                .map (question => question.accented ? 1 : 0)
+                .join ('');
+            
+            const response =
+                DATASET.questions
+                .map (question =>
+                    question.userResponse === null
+                    ? 'x'
+                    : (question.options.list.indexOf (question.userResponse) + 1)
+                )
+                .join ('');
+            
+            // console.log (datasetFileName, accented, response);
+            
+            $.ajax ({
+                method: 'POST',
+                url: 'log.php',
+                data: {
+                    dataset:      datasetFileName,
+                    accented:     accented,
+                    response:     response,
+                    serialNumber: serialNumber
+                }
+            });
+        }
+        
+        // TODO: Make the table header sticky.
+        function printComparison ()
+        {
+            console.log ('Printing comparison table ...');
+            const selectedRespondents = DATASET.respondents.filter (respondent => respondent.selected);
+            $('#comparison .table-responsive').html (
+                '<table class="table table-bordered table-hover w-auto mx-auto mb-0 bg-white shadow">'
+                    + '<thead>'
+                        + '<tr>'
+                            + '<th>' + LOCALIZATION.question + '</th>'
+                            + '<th class="response-cell">' + LOCALIZATION.myResponse + '</th>'
+                            + selectedRespondents.map (respondent =>
+                                '<th class="response-cell"' + (selectedRespondents.length === 1 ? ' colspan="2"' : '') + '>'
+                                    + respondent.name
+                                    + (
+                                        selectedRespondents.length === 1
+                                        ? (' (' + LOCALIZATION.match + ' ' + showPercent (respondent.score) + ')')
+                                        : ('<br>' + showPercent (respondent.score))
+                                    )
+                                + '</th>'
+                            )
+                            .join ('')
+                        + '</tr>'
+                    + '</thead>'
+                    + '<tbody>'
+                        + DATASET.questions.map ((question, i) =>
+                            '<tr' + (question.accented ? ' class="accented"' : '') + '>'
+                                + '<td class="ps-0">'
+                                    // Align the indices.
+                                    + '<div class="d-flex">'
+                                        + '<div class="index">' + (i + 1) + '.</div>'
+                                        + '<div class="text-start">' + question.title + '</div>'
+                                    + '</div>'
+                                + '</td>'
+                                + '<td class="response-cell">'
+                                    + (
+                                        question.userResponse === null
+                                        ? NO_RESPONSE
+                                        : formatText (question.userResponse)
+                                    )
+                                + '</td>'
+                                + selectedRespondents.map (respondent => {
+                                    const response = question.responses[respondent.name];
+                                    const style =
+                                        response.colour === null
+                                        ? ''
+                                        : (
+                                            'style="background-color: rgb('
+                                            + response.colour.r
+                                            + ',' + response.colour.g
+                                            + ',' + response.colour.b
+                                            + ') !important;"'
+                                        );
+                                    return (
+                                        selectedRespondents.length === 1
+                                        ? (
+                                            '<td class="response-cell" ' + style + '>'
+                                                + (
+                                                    response.option === null
+                                                    ? NO_RESPONSE
+                                                    : formatText (response.option)
+                                                )
+                                            + '</td>'
+                                            + '<td>'
+                                                + (
+                                                    response.comment === null
+                                                    ? ('<span class="text-secondary fst-italic">' + LOCALIZATION.noComment + '</span>')
+                                                    : formatText (response.comment)
+                                                )
+                                            + '</td>'
+                                        )
+                                        : (
+                                            '<td class="response-cell" ' + style + '>'
+                                                + (
+                                                    response.option === null
+                                                    ? NO_RESPONSE
+                                                    : formatText (response.option)
+                                                )
+                                                + (
+                                                    response.comment === null
+                                                    ? ''
+                                                    : ('<i class="fa-solid fa-comment-dots text-primary ms-2" title="' + LOCALIZATION.comment + ': ' + response.comment + '"></i>')
+                                                )
+                                            + '</td>'
+                                        )
+                                    );
+                                })
+                                .join ('')
+                            + '</tr>'
+                        )
+                        .join ('\n')
+                    + '</tbody>'
+                + '</table>'
+            );
+            
+            if (FANCY_TOOLTIPS)
+            {
+                $('.fa-comment-dots').each (function () {
+                    new bootstrap.Tooltip (this);
+                });
+            }
+        }
+        
+        function printError (message)
+        {
+            $('#questions').html (
+                '<div class="alert alert-danger mt-3 mb-0">'
+                    + message
+                + '</div>'
+            );
+        }
+        
+        // Compare to downloadResults.
+        function printResultList ()
+        {
+            $('#evaluation-box').html (
+                '<div>Nejpodobnější odpovědi mají:</div>'
+                + '<div class="mt-3 d-grid gap-3 gap-sm-4 evaluation-list">'
+                    + DATASET.respondents
+                    .filter (respondent => respondent.responded)
+                    .map ((respondent, i) =>
+                        '<div class="respondent d-flex" data-name="' + respondent.name + '">'
+                            + '<div class="flex-grow-1">'
+                                + '<div class="d-flex justify-content-between align-items-center mb-1">'
+                                    + '<span class="text-start">' + respondent.name + '</span>'
+                                    + '<span class="ms-3 ms-sm-4">' + showPercent (respondent.score) + '</span>'
+                                + '</div>'
+                                + showProgress (respondent)
+                            + '</div>'
+                            + '<button type="button" class="compare-button btn btn-outline-primary ms-3 ms-sm-4">'
+                                + '<span class="btn-text text-nowrap">'
+                                    + '<span class="btn-text-inactive">'
+                                        + '<i class="fa-solid fa-scale-unbalanced-flip"></i>'
+                                        + ' <span class="d-none d-sm-inline">' + LOCALIZATION.compare + '</span>'
+                                    + '</span>'
+                                    + '<span class="btn-text-active opacity-0">'
+                                        + '<i class="fa-solid fa-circle-xmark"></i>'
+                                        + ' <span class="d-none d-sm-inline">' + LOCALIZATION.doNotCompare + '</span>'
+                                    + '</span>'
+                                + '</span>'
+                            + '</button>'
+                        + '</div>'
+                    )
+                    .join ('\n')
+                + '</div>'
+                + (
+                    DATASET.respondents.every (respondent => respondent.responded)
+                    ? ''
+                    : (
+                        '<div class="mt-4">Na žádnou otázku neodpověděli:</div>'
+                        + '<div class="mt-1">'
+                            + DATASET.respondents
+                            .filter (respondent => respondent.responded === false)
+                            .map (respondent =>
+                                '<span class="text-nowrap">'
+                                    + respondent.name
+                                    + (
+                                        respondent.nonFilingStatement.length === 0
+                                        ? ''
+                                        : (
+                                            ' <a href="#" class="showReasonButton" data-respondent="' + respondent.name + '">'
+                                                + '(vyjádření)'
+                                            + '</a>'
+                                        )
+                                    )
+                                + '</span>'
+                            )
+                            .join (', ')
+                        + '</div>'
+                        + '<div class="mt-4 fst-italic">'
+                            + formatText (
+                                'Poznámka: Všechna kandidující uskupení byla oslovena se žádostí o odpovědi a připomínkování otázek,'
+                                + ' na což dostala deset dní, ale většina toho nevyužila. Odpovídat stále mohou.'
+                            )
+                        + '</div>'
+                    )
+                )
+            );
+        }
+        
+        function setLinkTargets (html)
+        {
+            return html.replace ('<a ', '<a target="_blank" ');
+        }
+        
+        function showPercent (x)
+        {
+            const fractionDigits = 0;
+            return (
+                (100.0 * x).toLocaleString (
+                    'cs-CZ',
+                    {
+                        minimumFractionDigits: fractionDigits,
+                        maximumFractionDigits: fractionDigits
+                    }
+                )
+                + '&nbsp;%'
+            );
+        }
+        
+        function showProgress (respondent)
+        {
+            return (
+                '<div class="progress">'
+                    + '<div class="progress-bar"'
+                        + ' role="progressbar"'
+                        + ' aria-valuemin="0"'
+                        + ' aria-valuemax="100"'
+                        + ' aria-valuenow="' + (100 * respondent.score) + '"'
+                        + ' style="width: ' + (100 * respondent.score) + '%; background-color: ' + respondent.colour + ';"'
+                    + '>'
+                    + '</div>'
+                + '</div>'
+            );
+        }
+        
+        function ucFirst (string)
+        {
+            return (string.substring (0, 1).toUpperCase () + string.substring (1));
+        }
+        
+        // Initialization.
+        $(document).ready (function () {
+            console.log ('Generic voting advice application');
+            console.log ('(c) 2022 Josef Plch');
+            console.log ('---------------------------------');
+            
+            // Alternative: document.URL;
+            const url = new URL (window.location.href);
+            if (REQUIRE_HTTPS && window.location.href.includes ('http:'))
+            {
+                // Similar to HTTP redirect -- it doesn’t create an entry in the browser’s history.
+                window.location.replace (
+                    window.location.href.replace ('http:', 'https:')
+                );
+            }
+            
+            const datasetParameter = url.searchParams.get ('dataset');
+            
+            if (datasetParameter === null || datasetParameter.length === 0)
+            {
+                datasetFileName = 'jedovnice-2022';
+                console.warn ('Dataset not specified, using the default: ' + datasetFileName);
+            }
+            else
+            {
+                datasetFileName = datasetParameter;
+            }
+            
+            if (url.protocol === 'http:' || url.protocol === 'https:')
+            {
+                $.getScript ('./datasets/' + datasetFileName + '.js')
+                .done (function () {
+                    console.log ('Data file loaded.');
+                    init ();
+                })
+                .fail (function () {
+                    printError (LOCALIZATION.dataFileNotFound);
+                    console.error ('Data file could not be loaded.');
+                });
+            }
+            // Offline mode.
+            else
+            {
+                // Create a new script node and append it to document head.
+                const script = document.createElement ('script');
+                script.src = './datasets/' + datasetFileName + '.js';
+                document.head.appendChild (script);
+                
+                // 100 ms shall be enough for the script to load.
+                setTimeout (init, 100);
+            }
+        });
+        
+        $('#back-button').on ('click', function () {
+            $('#main-carousel').carousel ('prev');
+        });
+        
+        $('#compare-button').on ('click', printComparison);
+        
+        $('#download-button').on ('click', downloadResults);
+        
+        $('#evaluate-button').on ('click', function () {
+            evaluate ();
+            
+            const url = new URL (window.location.href);
+            if (url.protocol === 'http:' || url.protocol === 'https:')
+            {
+                log ();
+            }
+            
+            serialNumber++;
+        });
+        
+        $('#evaluation-box').on ('click', '.compare-button', function () {
+            const name = $(this).closest ('.respondent').attr ('data-name');
+            const respondent = DATASET.respondents.find (r => r.name === name);
+            respondent.selected = ! respondent.selected;
+            $(this).toggleClass ('btn-primary',         respondent.selected);
+            $(this).toggleClass ('btn-outline-primary', respondent.selected === false);
+            $(this).find ('.btn-text-active').toggleClass   ('opacity-0', respondent.selected === false);
+            $(this).find ('.btn-text-inactive').toggleClass ('opacity-0', respondent.selected);
+            if (DATASET.respondents.some (r => r.selected))
+            {
+                printComparison ();
+                $('#comparison').slideDown ();
+            }
+            else
+            {
+                $('#comparison').slideUp ();
+            }
+        });
+        
+        $('#evaluation-box').on ('click', '.showReasonButton', function () {
+            const respondentName = $(this).attr ('data-respondent');
+            const respondent = DATASET.respondents.filter (respondent => respondent.name === respondentName) [0];
+            // console.log (respondentName, respondent);
+            $('#reason-modal .modal-body').html (
+                respondent.nonFilingStatement
+                .map (paragraph => '<p class="text-start">' + formatText (paragraph) + '</p>')
+                .join ('')
+            );
+            REASON_MODAL.show ();
+        });
+        
+        /*
+        // Avoid twitching.
+        $('#main-carousel').on ('slid.bs.carousel', function () {
+            window.scrollTo ({top: 0});
+            // Alternative way.
+            // $('#evaluation-tab').css ('min-height', 0);
+            // $('#evaluation-tab').animate ({minHeight: '0'});
+        });
+        */
+        
+        $('#main-carousel').on ('slide.bs.carousel', function () {
+            // window.scrollTo ({top: 0}) doesn’t accept animation time.
+            // TODO: Stop animation on manual scroll?
+            $('html, body').animate ({scrollTop: 0});
+        });
+        
+        $('#questions').on ('click', '.question .accent-button', function () {
+            const $button = $(this);
+            const question = DATASET.questions[$(this).closest ('.question').index ()];
+            
+            question.accented = ! question.accented;
+            $button.toggleClass ('btn-outline-primary', question.accented === false);
+            $button.toggleClass ('btn-primary',         question.accented);
+            // $button.find ('.btn-text').html (question.accented ? 'Zrušit označení' : 'Označit jako důležité');
+            $button.find ('.fa-star').toggleClass ('text-warning', question.accented);
+        });
+        
+        $('#questions').on ('change', '.question input[type="radio"]', function () {
+            const $option = $(this).closest ('.option');
+            const question = DATASET.questions[$option.closest ('.question').index ()];
+            const response = $(this).val ();
+            
+            $option.siblings ().removeClass ('selected');
+            $option.addClass ('selected');
+            
+            question.userResponse = (response === '--') ? null : response;
+            const userResponded =
+                DATASET.questions.reduce (
+                    (result, question) => result || question.userResponse !== null,
+                    false
+                );
+            
+            $('#evaluate-button').prop ('disabled', userResponded === false);
+            $('#evaluate-note').fadeTo (400, userResponded ? 0 : 1);
+        });
+        
+        $('#questions').on ('focusin', '.question input[type="radio"]', function () {
+            $(this).closest ('.option').addClass ('focus');
+        });
+        
+        $('#questions').on ('focusout', '.question input[type="radio"]', function () {
+            $(this).closest ('.option').removeClass ('focus');
+        });
+        </script>
+    </body>
+</html>
