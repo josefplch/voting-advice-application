@@ -369,7 +369,7 @@
                     <div class="modal-header bg-light">
                         <h3 class="modal-title">Vyjádření k nevyplnění</h3>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body text-start">
                         <!-- Dynamic content -->
                     </div>
                     <div class="modal-footer">
@@ -390,7 +390,7 @@
         <footer id="footer" class="px-3 py-2 text-center bg-dark text-secondary fixed-bottom">
             <span>
                 Šablona:
-                <span class="text-nowrap">verze 2022-09-12,</span>
+                <span class="text-nowrap">verze 2022-09-14,</span>
                 <span class="text-nowrap">licence <a href="https://cs.wikipedia.org/wiki/Licence_MIT" title="Článek o licenci na Wikipedii" class="text-secondary">MIT</a>,</span>
                 <span class="text-nowrap">vytvořil Josef Plch ml.</span>
             </span>
@@ -601,12 +601,12 @@
                             ? ''
                             : (
                                 '<div class="mt-2 mb-3 details">'
-                                    + setLinkTargets (formatText (question.details))
+                                    + setLinkTargets (formatText (question.details, false))
                                 + '</div>'
                             )
                         )
                         + '<div class="mt-2 text">'
-                            + formatText (question.text)
+                            + formatText (question.text, false)
                         + '</div>'
                         + '<div class="options mt-2 d-grid gap-2">'
                             + question.options.list.map ((option, oi) => {
@@ -768,7 +768,7 @@
             $('#main-carousel').carousel ('next');
         }
         
-        function formatText (text)
+        function formatText (text, breakLongWords)
         {
             // Non-breakable spaces.
             const nbsp = '&nbsp;';
@@ -794,8 +794,11 @@
             }
             result = result.substring (1);
             
-            // Long words. Beware of links.
-            result = result.replace (/([a-z]{2}[aáeěéiíoóuúůyý])/, '$1<wbr>');
+            // Long words. Beware of links. May broke HTML code.
+			if (breakLongWords)
+			{
+				result = result.replace (/([a-z]{6}[aáeěéiíoóuúůyý])/, '$1<wbr>');
+			}
             
             return result;
         }
@@ -868,7 +871,7 @@
                                     + (
                                         question.userResponse === null
                                         ? NO_RESPONSE
-                                        : formatText (question.userResponse)
+                                        : formatText (question.userResponse, true)
                                     )
                                 + '</td>'
                                 + selectedRespondents.map (respondent => {
@@ -890,14 +893,14 @@
                                                 + (
                                                     response.option === null
                                                     ? NO_RESPONSE
-                                                    : formatText (response.option)
+                                                    : formatText (response.option, true)
                                                 )
                                             + '</td>'
                                             + '<td>'
                                                 + (
                                                     response.comment === null
                                                     ? ('<span class="text-secondary fst-italic">' + LOCALIZATION.noComment + '</span>')
-                                                    : formatText (response.comment)
+                                                    : formatText (response.comment, true)
                                                 )
                                             + '</td>'
                                         )
@@ -906,7 +909,7 @@
                                                 + (
                                                     response.option === null
                                                     ? NO_RESPONSE
-                                                    : formatText (response.option)
+                                                    : formatText (response.option, true)
                                                 )
                                                 + (
                                                     response.comment === null
@@ -1002,7 +1005,8 @@
                         + '<div class="mt-4 fst-italic">'
                             + formatText (
                                 'Poznámka: Všechna kandidující uskupení byla oslovena se žádostí o odpovědi a připomínkování otázek,'
-                                + ' na což dostala deset dní, ale většina toho nevyužila. Odpovídat stále mohou.'
+                                + ' na což dostala deset dní, ale většina toho nevyužila. Odpovídat stále mohou.',
+								false
                             )
                         + '</div>'
                     )
@@ -1015,6 +1019,16 @@
             return html.replace ('<a ', '<a target="_blank" ');
         }
         
+		function showNonFillingStatement (respondentName)
+		{
+            const respondent = DATASET.respondents.filter (respondent => respondent.name === respondentName) [0];
+            // console.log (respondentName, respondent);
+            $('#reason-modal .modal-body').html (
+                formatText (respondent.nonFilingStatement, false)
+            );
+            REASON_MODAL.show ();
+		}
+		
         function showPercent (x)
         {
             const fractionDigits = 0;
@@ -1144,15 +1158,7 @@
         });
         
         $('#evaluation-box').on ('click', '.showReasonButton', function () {
-            const respondentName = $(this).attr ('data-respondent');
-            const respondent = DATASET.respondents.filter (respondent => respondent.name === respondentName) [0];
-            // console.log (respondentName, respondent);
-            $('#reason-modal .modal-body').html (
-                respondent.nonFilingStatement
-                .map (paragraph => '<p class="text-start">' + formatText (paragraph) + '</p>')
-                .join ('')
-            );
-            REASON_MODAL.show ();
+			showNonFillingStatement ($(this).attr ('data-respondent'));
         });
         
         /*
