@@ -20,7 +20,7 @@ else
     $time = date ('Y-m-d H:i:s');
     $ip   = $_SERVER ['REMOTE_ADDR'];
     
-    $file = fopen ('./log/'.$dataset.'.log', 'a');
+    $file = fopen ('./data/'.$dataset.'/responses.log', 'a');
     fwrite ($file, $time.'  '.$ip.'  '.$accented.'  '.$response.'  '.$serialNumber.PHP_EOL);
     fflush ($file);
     fclose ($file);
